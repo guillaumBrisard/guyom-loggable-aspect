@@ -1,0 +1,129 @@
+buildscript {
+	dependencies {
+		classpath files('lib/gradle-aspectj-1.5.jar')
+	}
+}
+
+ext.versions = [
+	aspectj:	'1.8.2'
+]
+
+project.ext {
+	aspectjVersion = "${versions.aspectj}"
+}
+
+apply plugin: 'java'
+apply plugin: 'aspectj'
+apply plugin: 'eclipse'
+
+eclipse {
+	classpath {
+		downloadSources = true
+		downloadJavadoc = true
+	}
+}
+
+//add aspectj support for eclipse plugin
+eclipse.project.file.withXml { xmlProvider ->
+	Node projectDescription = xmlProvider.asNode()
+	def buildCommandNode = projectDescription.buildSpec.'**'.find{ it.text() == 'org.eclipse.jdt.core.javabuilder' }
+	buildCommandNode.parent().remove(buildCommandNode)
+}
+eclipse.project {
+	buildCommand 'org.eclipse.ajdt.core.ajbuilder'
+	natures 'org.eclipse.ajdt.ui.ajnature'
+}
+
+repositories {
+	mavenCentral()
+}
+
+version = '0.1'
+group = "com.gb.guyom"
+
+jar {
+	manifest.attributes provider: 'sBoum Company'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+	all*.exclude group: 'org.mockito', module: 'mockito-all'
+	
+	all*.exclude group: 'commons-logging', module: 'commons-logging'
+	all*.exclude group: 'log4j', module: 'log4j'
+	all*.exclude group: 'org.apache.logging.log4j'
+
+	all*.exclude group: 'org.slf4j', module: 'slf4j-jcl'
+	all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+	all*.exclude group: 'org.slf4j', module: 'slf4j-jdk14'
+	all*.exclude group: 'org.slf4j', module: 'slf4j-nop'
+	all*.exclude group: 'org.slf4j', module: 'slf4j-simple'
+}
+
+project.ext.aspectjVersion = "${versions.aspectj}"
+
+ext.versions += [
+	junit:		'4.11',
+	hamcrest:	'1.3',
+	mockito:	'1.9.5',
+	
+	slf4j:		'1.7.7',
+	logback:	'1.1.2',
+	
+	spring:		'4.1.0.RELEASE'
+]
+
+ext.libs = [
+	'hamcrest-core':				["org.hamcrest:hamcrest-core:${versions.hamcrest}"], // Because JUnit and Mockito use it
+	'hamcrest-library':				["org.hamcrest:hamcrest-library:${versions.hamcrest}"],
+	'junit':						["junit:junit:${versions.junit}", { exclude group: 'org.hamcrest', module: 'hamcrest-core' }],
+	// NEVER use mockito-all, see mockito-core VS mockito-all https://code.google.com/p/mockito/wiki/DeclaringMockitoDependency
+	'mockito-core': 				["org.mockito:mockito-core:${versions.mockito}", { exclude group: 'org.hamcrest', module: 'hamcrest-core' }],
+
+
+	'slf4j-api':					["org.slf4j:slf4j-api:${versions.slf4j}"],
+	'logback-core':					["ch.qos.logback:logback-core:${versions.logback}"],
+	'logback-classic':				["ch.qos.logback:logback-classic:${versions.logback}"],
+	'jcl-over-slf4j':				["org.slf4j:jcl-over-slf4j:${versions.slf4j}"],
+	'log4j-over-slf4j':				["org.slf4j:log4j-over-slf4j:${versions.slf4j}"],
+	// Be aware of the performance issue http://www.slf4j.org/legacy.html#jul-to-slf4j
+	'jul-to-slf4j':					["org.slf4j:jul-to-slf4j:${versions.slf4j}"],
+
+	'spring-core':					["org.springframework:spring-core:${versions.spring}"],
+	'spring-beans':					["org.springframework:spring-beans:${versions.spring}"],
+
+	'aspectjweaver':				["org.aspectj:aspectjweaver:${versions.aspectj}"]
+]
+
+dependencies {
+	testAspectpath files("$buildDir/classes/main")
+	
+	compile libs.'slf4j-api'
+	compile libs.'logback-core'
+	compile libs.'logback-classic'
+	compile libs.'jcl-over-slf4j'
+	compile libs.'log4j-over-slf4j'
+	compile libs.'jul-to-slf4j'
+	 
+    compile libs.'spring-core'
+    compile libs.'spring-beans'
+    
+    compile libs.'aspectjweaver'
+	
+	testCompile libs.'junit'
+	testCompile libs.'hamcrest-core'
+	testCompile libs.'hamcrest-library'
+	testCompile libs.'mockito-core'	
+}
+
+compileAspect {
+	additionalAjcArgs = [
+		'X' : 'noInline'
+	]
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.1'
+}

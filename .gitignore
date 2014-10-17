@@ -1,3 +1,19 @@
-target/
+# Common files
+*~
+
+# IntelliJ files
 .idea/
 *.iml
+
+# Eclipse files
+.settings/
+.classpath
+.project
+/bin/
+.factorypath
+
+# Gradle files
+/build/
+.gradle/
+
+# Project files
