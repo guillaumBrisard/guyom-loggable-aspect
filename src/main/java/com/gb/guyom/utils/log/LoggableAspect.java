@@ -8,7 +8,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Logs method calls.
@@ -25,11 +24,14 @@ public class LoggableAspect {
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoggableAspect.class);
 
-	@Autowired
-	private LoggableAspectHelper logAspectHelper;
+	private LoggableAspectHelper loggableAspectHelper;
+
+	public LoggableAspect() {
+		loggableAspectHelper = new LoggableAspectHelper();
+	}
 
 	void setLoggableAspectHelper(LoggableAspectHelper loggableAspectHelper) {
-		this.logAspectHelper = loggableAspectHelper;
+		this.loggableAspectHelper = loggableAspectHelper;
 	}
 
 	/**
@@ -54,7 +56,7 @@ public class LoggableAspect {
 			output = point.proceed();
 		}
 		else {
-			output = logAspectHelper.wrap(point, method, method.getDeclaringClass().getAnnotation(Loggable.class));
+			output = loggableAspectHelper.wrap(point, method, method.getDeclaringClass().getAnnotation(Loggable.class));
 		}
 		return output;
 	}
@@ -71,7 +73,7 @@ public class LoggableAspect {
 	@Around("(execution(* *(..)) || initialization(*.new(..)))" + " && @annotation(com.gb.guyom.utils.log.Loggable)")
 	public Object wrapMethod(final ProceedingJoinPoint point) throws Throwable {
 		final Method method = MethodSignature.class.cast(point.getSignature()).getMethod();
-		return logAspectHelper.wrap(point, method, method.getAnnotation(Loggable.class));
+		return loggableAspectHelper.wrap(point, method, method.getAnnotation(Loggable.class));
 	}
 
 }

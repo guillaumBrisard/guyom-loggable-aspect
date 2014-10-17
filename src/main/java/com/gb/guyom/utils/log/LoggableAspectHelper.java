@@ -3,12 +3,19 @@ package com.gb.guyom.utils.log;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoggableAspectHelper {
 
-	@Autowired
+	@SuppressWarnings("unused")
+	private static final Logger LOGGER = LoggerFactory.getLogger(LoggableAspectHelper.class);
+
 	private LoggableHelper loggableHelper;
+
+	public LoggableAspectHelper() {
+		loggableHelper = new LoggableHelper();
+	}
 
 	public void setLoggableHelper(LoggableHelper loggableHelper) {
 		this.loggableHelper = loggableHelper;

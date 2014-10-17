@@ -91,9 +91,6 @@ ext.libs = [
 	// Be aware of the performance issue http://www.slf4j.org/legacy.html#jul-to-slf4j
 	'jul-to-slf4j':					["org.slf4j:jul-to-slf4j:${versions.slf4j}"],
 
-	'spring-core':					["org.springframework:spring-core:${versions.spring}"],
-	'spring-beans':					["org.springframework:spring-beans:${versions.spring}"],
-
 	'aspectjweaver':				["org.aspectj:aspectjweaver:${versions.aspectj}"]
 ]
 
@@ -106,9 +103,6 @@ dependencies {
 	compile libs.'jcl-over-slf4j'
 	compile libs.'log4j-over-slf4j'
 	compile libs.'jul-to-slf4j'
-	 
-    compile libs.'spring-core'
-    compile libs.'spring-beans'
     
     compile libs.'aspectjweaver'
 	
